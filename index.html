@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BookEase — Simple Accounting for Small Businesses</title>
+<style>
+:root{
+  --bg:#f7f3ea;--paper:#fffdf8;--ink:#252525;--muted:#756f65;--line:#ddd6c8;
+  --primary:#c65d3a;--primary-dark:#a8472a;--olive:#66734a;--green:#4f7a5a;
+  --warning:#b7791f;--danger:#b84a4a;--shadow:0 5px 18px rgba(50,42,30,.07);
+}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,Segoe UI,Arial,sans-serif}
+button,input,select{font:inherit}button{cursor:pointer}
+header{position:sticky;top:0;z-index:20;background:rgba(255,253,248,.96);border-bottom:1px solid var(--line)}
+.nav{max-width:1280px;margin:auto;padding:14px 22px;display:flex;align-items:center;gap:8px}
+.logo{font-size:22px;font-weight:900;letter-spacing:-.6px;margin-right:20px}.logo span{color:var(--primary)}
+.navlinks{display:flex;gap:4px;flex-wrap:wrap}.navlinks button{border:0;background:transparent;color:#5e594f;padding:9px 11px;border-radius:8px;font-size:12px;font-weight:750}
+.navlinks button:hover,.navlinks button.active{background:#f2e8dc;color:var(--primary-dark)}
+.navright{margin-left:auto;display:flex;align-items:center;gap:8px}.tag{font-size:9px;font-weight:900;letter-spacing:.7px;color:var(--olive);background:#edf0e7;padding:7px 9px;border-radius:99px}
+main{max-width:1280px;margin:auto;padding:22px}
+.page{display:none}.page.active{display:block}
+.topline{display:flex;justify-content:space-between;align-items:end;gap:12px;margin-bottom:18px}
+h1{font-size:28px;margin:0;letter-spacing:-.8px}h2{font-size:17px;margin:0}h3{font-size:13px;margin:0}
+.subtitle{font-size:12px;color:var(--muted);margin-top:5px;line-height:1.5}
+.btn{border:1px solid transparent;border-radius:8px;padding:10px 13px;font-size:12px;font-weight:800}
+.primary{background:var(--primary);color:#fff}.primary:hover{background:var(--primary-dark)}
+.secondary{background:#f0ebe2;color:#403b34;border-color:var(--line)}.olive{background:#edf0e7;color:#4f5e36}.danger{background:#faecea;color:#9e3d35}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:13px;padding:18px;box-shadow:var(--shadow)}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.grid2{display:grid;grid-template-columns:1.25fr .75fr;gap:14px}
+.kpi small{font-size:10px;color:var(--muted);font-weight:850;text-transform:uppercase;letter-spacing:.5px}.kpi strong{font-size:24px;display:block;margin:7px 0 3px}.kpi span{font-size:10px;color:var(--muted)}
+.cardhead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px}.actions{display:flex;gap:7px;flex-wrap:wrap}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field label{display:block;font-size:10px;font-weight:850;color:#5f5a51;margin-bottom:5px}.field input,.field select{width:100%;padding:10px;border:1px solid #cfc7b9;border-radius:8px;background:#fffdf9;color:var(--ink);outline:0}.field input:focus,.field select:focus{border-color:var(--primary);box-shadow:0 0 0 3px #c65d3a18}.span2{grid-column:span 2}
+.quick{display:flex;gap:7px;flex-wrap:wrap}.quick button{border:1px dashed #cdbca8;background:#fbf7ef;color:#765039;border-radius:8px;padding:8px 10px;font-size:10px;font-weight:800}
+.notice{padding:11px 12px;background:#f2f5eb;border-left:3px solid var(--olive);border-radius:7px;font-size:11px;line-height:1.5;color:#505743}
+.success{padding:10px;background:#edf6ef;border-left:3px solid var(--green);color:#3e6248;border-radius:7px;font-size:11px}
+.warn{padding:10px;background:#fff7e8;border-left:3px solid var(--warning);color:#7a5718;border-radius:7px;font-size:11px}
+.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:9px}table{width:100%;border-collapse:collapse;min-width:680px}th,td{padding:10px 11px;border-bottom:1px solid var(--line);font-size:11px;text-align:left}th{font-size:9px;text-transform:uppercase;color:#756f65;background:#f5f1e9;letter-spacing:.4px}tr:last-child td{border-bottom:0}.num{text-align:right!important}
+.pill{display:inline-block;padding:4px 7px;border-radius:6px;font-size:9px;font-weight:850}.pill.sales{background:#edf6ef;color:#3e6948}.pill.expense{background:#faecea;color:#9e3d35}.pill.asset{background:#f1ece7;color:#73543e}.pill.capital{background:#edf0e7;color:#53613b}.pill.loan{background:#fff3dd;color:#805d1a}.pill.other{background:#f0edf7;color:#62517e}
+.empty{text-align:center;padding:30px 15px;border:1px dashed #cfc7b9;border-radius:9px;color:var(--muted);font-size:12px}
+.hero{display:grid;grid-template-columns:1.5fr .5fr;gap:14px;margin-bottom:16px}.heroMain{background:#302d28;color:#fffdf8;border-radius:14px;padding:25px}.heroMain h1{font-size:32px}.heroMain p{color:#ddd5ca;line-height:1.6;font-size:12px;max-width:720px}.heroSide{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:20px}.heroSide strong{display:block;font-size:27px;margin:8px 0}
+.chartbox{height:270px;position:relative}.barChart{display:flex;align-items:end;gap:16px;height:210px;padding:20px 10px 0;border-bottom:1px solid var(--line)}.barGroup{flex:1;height:100%;display:flex;align-items:end;justify-content:center;gap:6px}.bar{width:30px;min-height:3px;border-radius:5px 5px 0 0;position:relative}.bar.sales{background:var(--primary)}.bar.exp{background:var(--olive)}.bar span{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);font-size:8px;white-space:nowrap;color:var(--muted)}.axis{display:flex;gap:16px}.axis div{flex:1;text-align:center;font-size:9px;color:var(--muted);padding-top:5px}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px}.step{padding:9px 12px;background:#f2e8dc;border:1px solid #dfcbb7;border-radius:7px;color:#78482f;font-weight:800;font-size:10px}.arrow{color:#9a8e7d}
+.controlgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.control{padding:12px;background:#faf7f0;border:1px solid var(--line);border-radius:8px;font-size:10px;line-height:1.5}.control b{display:block;font-size:11px;margin-bottom:3px}
+.invoice{max-width:700px;margin:auto}.invoicehead{display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:14px}.invoicebrand{font-size:21px;font-weight:900}.totalbox{text-align:right;margin-top:15px;background:#f5f1e9;padding:13px;border-radius:8px}.totalbox strong{font-size:20px}
+.modal{display:none;position:fixed;inset:0;background:#25252566;z-index:50;align-items:center;justify-content:center;padding:18px}.modal.open{display:flex}.modalbox{width:min(620px,100%);background:var(--paper);border-radius:14px;padding:20px;border:1px solid var(--line);box-shadow:0 20px 50px #0003}.close{border:0;background:transparent;font-size:22px;color:var(--muted)}
+.toast{position:fixed;right:20px;bottom:20px;background:#302d28;color:#fff;padding:11px 14px;border-radius:8px;font-size:11px;display:none;z-index:80}
+footer{text-align:center;color:#928a7d;font-size:9px;padding:28px}
+@media(max-width:950px){.grid4{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}.hero{grid-template-columns:1fr}.grid3,.controlgrid{grid-template-columns:1fr 1fr}}
+@media(max-width:650px){.nav{align-items:flex-start;flex-wrap:wrap}.navright{display:none}.navlinks{width:100%;overflow:auto;flex-wrap:nowrap}.navlinks button{white-space:nowrap}.grid4,.grid3,.controlgrid,.formgrid{grid-template-columns:1fr}.span2{grid-column:span 1}main{padding:14px}.heroMain h1{font-size:26px}}
+@media print{header,.noPrint,footer{display:none!important}.page{display:none!important}.page.active{display:block!important}main{padding:0}.card{box-shadow:none}}
+</style>
+</head>
+<body>
+<header>
+  <div class="nav">
+    <div class="logo">Book<span>Ease</span></div>
+    <div class="navlinks">
+      <button class="active" onclick="go('dashboard',this)">Dashboard</button>
+      <button onclick="go('transactions',this)">Transactions</button>
+      <button onclick="go('journal',this)">Journal</button>
+      <button onclick="go('ledger',this)">Ledger</button>
+      <button onclick="go('trial',this)">Trial Balance</button>
+      <button onclick="go('reports',this)">Reports</button>
+      <button onclick="go('ratios',this)">Ratios</button>
+      <button onclick="go('architecture',this)">How It Works</button>
+    </div>
+    <div class="navright"><span class="tag">ACCM508 • PROTOTYPE</span></div>
+  </div>
+</header>
+
+<main>
+<section id="dashboard" class="page active">
+  <div class="hero">
+    <div class="heroMain">
+      <h1>Simple accounting.<br>Less manual work.</h1>
+      <p>BookEase is a conceptual FinTech accounting application for small businesses, freelancers and startups. Enter a business transaction once and the prototype carries it through journal entries, ledgers, trial balance and financial reports.</p>
+      <button class="btn primary" onclick="openTx()">+ Add Transaction</button>
+    </div>
+    <div class="heroSide">
+      <small>NET PROFIT</small><strong id="heroProfit">₹0</strong>
+      <div class="subtitle">Current recorded data</div>
+      <div class="success" style="margin-top:14px">Record → Verify → Report</div>
+    </div>
+  </div>
+
+  <div class="grid4" id="kpis"></div>
+
+  <div class="grid2" style="margin-top:14px">
+    <div>
+      <div class="card">
+        <div class="cardhead"><div><h2>Revenue vs Expenses</h2><div class="subtitle">Simple visual trend from recorded transactions.</div></div><button class="btn secondary" onclick="loadDemo()">Load Sample Data</button></div>
+        <div id="chartArea" class="chartbox"></div>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <div class="cardhead"><div><h2>Recent Transactions</h2><div class="subtitle">Latest accounting events.</div></div><button class="btn secondary" onclick="go('transactions')">View All</button></div>
+        <div id="recent"></div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="cardhead"><div><h2>Add Transaction</h2><div class="subtitle">Complete this form and BookEase creates the accounting entry.</div></div></div>
+        <div id="txForm"></div>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <div class="cardhead"><div><h2>Accounting Health</h2><div class="subtitle">Generated from actual records.</div></div></div>
+        <div id="health"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="transactions" class="page">
+  <div class="topline"><div><h1>Transactions</h1><div class="subtitle">Record and manage business events.</div></div><div class="actions"><button class="btn primary" onclick="openTx()">+ Add Transaction</button><button class="btn olive" onclick="loadDemo()">Demo Mode</button><button class="btn secondary" onclick="exportCSV()">Export CSV</button><button class="btn danger" onclick="clearData()">Clear All</button></div></div>
+  <div class="card">
+    <div class="cardhead"><div><h2>Transaction Register</h2><div class="subtitle">Delete an entry and every accounting report recalculates automatically.</div></div><div class="actions"><input id="search" oninput="renderTransactions()" placeholder="Search..." style="padding:9px;border:1px solid #cfc7b9;border-radius:8px"><select id="filter" onchange="renderTransactions()" style="padding:9px;border:1px solid #cfc7b9;border-radius:8px"><option value="all">All</option><option value="sale">Sales</option><option value="expense">Expenses</option><option value="asset">Assets</option><option value="capital">Capital</option><option value="loan">Loans</option></select></div></div>
+    <div id="transactionTable"></div>
+  </div>
+</section>
+
+<section id="journal" class="page">
+  <div class="topline"><div><h1>Automatic Journal</h1><div class="subtitle">Double-entry treatment generated from the transaction register.</div></div></div>
+  <div class="card">
+    <div class="success" style="margin-bottom:14px">✓ Control: every posted transaction produces equal debit and credit amounts.</div>
+    <div id="journalTable"></div>
+  </div>
+</section>
+
+<section id="ledger" class="page">
+  <div class="topline"><div><h1>General Ledger</h1><div class="subtitle">Account-wise view of journal movements.</div></div><select id="accountSelect" onchange="renderLedger()" style="padding:10px;border:1px solid #cfc7b9;border-radius:8px"></select></div>
+  <div class="card"><div id="ledgerTable"></div></div>
+</section>
+
+<section id="trial" class="page">
+  <div class="topline"><div><h1>Trial Balance</h1><div class="subtitle">A checkpoint before financial statements are generated.</div></div><span id="trialBadge" class="pill capital">BALANCED</span></div>
+  <div class="card"><div id="trialTable"></div></div>
+</section>
+
+<section id="reports" class="page">
+  <div class="topline"><div><h1>Financial Reports</h1><div class="subtitle">Automatically generated from the accounting records.</div></div><button class="btn secondary noPrint" onclick="window.print()">Print / Save PDF</button></div>
+  <div class="grid3">
+    <div class="card"><div class="cardhead"><div><h2>Profit & Loss</h2><div class="subtitle">Recorded period</div></div></div><div id="pl"></div></div>
+    <div class="card"><div class="cardhead"><div><h2>Balance Sheet</h2><div class="subtitle">Financial position</div></div></div><div id="bs"></div></div>
+    <div class="card"><div class="cardhead"><div><h2>Cash Flow</h2><div class="subtitle">Simple cash movement</div></div></div><div id="cf"></div></div>
+  </div>
+</section>
+
+<section id="ratios" class="page">
+  <div class="topline"><div><h1>Ratio Analysis</h1><div class="subtitle">Basic indicators calculated from the recorded data.</div></div></div>
+  <div class="grid4" id="ratioCards"></div>
+  <div class="card" style="margin-top:14px"><div class="cardhead"><div><h2>Accounting Insights</h2><div class="subtitle">Simple rule-based observations.</div></div></div><div id="insights"></div></div>
+</section>
+
+<section id="architecture" class="page">
+  <div class="topline"><div><h1>How BookEase Works</h1><div class="subtitle">Core workflow and accounting controls for the ACCM508 prototype.</div></div></div>
+  <div class="card">
+    <div class="flow">
+      <span class="step">USER</span><span class="arrow">→</span><span class="step">TRANSACTION ENTRY</span><span class="arrow">→</span><span class="step">ACCOUNTING RULES</span><span class="arrow">→</span><span class="step">JOURNAL</span><span class="arrow">→</span><span class="step">LEDGER</span><span class="arrow">→</span><span class="step">TRIAL BALANCE</span><span class="arrow">→</span><span class="step">FINANCIAL STATEMENTS</span><span class="arrow">→</span><span class="step">RATIOS & INSIGHTS</span>
+    </div>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <div class="cardhead"><div><h2>Accounting Controls</h2><div class="subtitle">Features designed to demonstrate accounting accuracy.</div></div></div>
+    <div class="controlgrid">
+      <div class="control"><b>✓ Double-entry bookkeeping</b>Every transaction creates matching debit and credit entries.</div>
+      <div class="control"><b>✓ Debit = Credit validation</b>Trial balance checks the accounting records.</div>
+      <div class="control"><b>✓ Transaction audit trail</b>Recorded events remain available in the register.</div>
+      <div class="control"><b>✓ Automatic statements</b>P&L, Balance Sheet and Cash Flow derive from entries.</div>
+      <div class="control"><b>✓ Trial balance checkpoint</b>Statements should be reviewed after balance validation.</div>
+      <div class="control"><b>✓ Basic data export</b>Transaction data can be exported as CSV.</div>
+    </div>
+  </div>
+  <div class="grid3" style="margin-top:14px">
+    <div class="card"><h2>Small Businesses</h2><div class="subtitle">Reduce manual bookkeeping and view basic financial performance.</div></div>
+    <div class="card"><h2>Freelancers</h2><div class="subtitle">Record income, expenses and customer receipts in one place.</div></div>
+    <div class="card"><h2>Startups</h2><div class="subtitle">Track transactions and generate management-level reports.</div></div>
+  </div>
+  <div class="notice" style="margin-top:14px"><b>Academic prototype:</b> Outputs should be verified by a qualified accountant before statutory or tax filing.</div>
+</section>
+
+<footer>BookEase — Academic FinTech Accounting Prototype • ACCM508: Accounting Considerations in FinTech • Educational use only.</footer>
+</main>
+
+<div class="modal" id="modal">
+ <div class="modalbox">
+  <div class="cardhead"><div><h2>Add a Transaction</h2><div class="subtitle">Enter the business event. The system creates the accounting treatment automatically.</div></div><button class="close" onclick="closeTx()">×</button></div>
+  <form id="txModalForm" onsubmit="saveTx(event)">
+   <div class="formgrid">
+    <div class="field"><label>Date</label><input id="date" type="date" required></div>
+    <div class="field"><label>Transaction Type</label><select id="type" onchange="syncCategory()">
+      <option value="sale">Sales</option><option value="expense">Expense</option><option value="asset">Asset Purchase</option><option value="capital">Owner Capital</option><option value="loan">Loan Received</option><option value="receipt">Customer Receipt</option><option value="payment">Supplier Payment</option><option value="drawings">Owner Withdrawal</option>
+    </select></div>
+    <div class="field span2"><label>Description</label><input id="desc" placeholder="e.g. Office rent paid" required></div>
+    <div class="field"><label>Amount (₹)</label><input id="amount" type="number" min=".01" step=".01" placeholder="25000" required></div>
+    <div class="field"><label>Payment Method</label><select id="method"><option value="bank">Bank</option><option value="cash">Cash</option><option value="credit">Credit / Outstanding</option></select></div>
+    <div class="field span2"><label>Category</label><select id="category"></select></div>
+   </div>
+   <div class="notice" style="margin-top:12px">Quick accounting example: Office rent paid through bank → <b>Rent Expense Dr</b> ₹25,000; <b>Bank Cr</b> ₹25,000.</div>
+   <div class="actions" style="margin-top:14px"><button class="btn primary" type="submit">Save Transaction</button><button class="btn secondary" type="button" onclick="closeTx()">Cancel</button></div>
+  </form>
+  <div style="margin-top:18px;border-top:1px solid var(--line);padding-top:15px">
+   <h3>Quick Demo</h3><div class="subtitle" style="margin-bottom:8px">Add one realistic entry with one click.</div>
+   <div class="quick">
+    <button onclick="quick('sale',50000,'Product Sales','Sales','bank')">+ ₹50,000 Sales</button>
+    <button onclick="quick('expense',20000,'Office Rent','Rent','bank')">+ ₹20,000 Rent</button>
+    <button onclick="quick('capital',30000,'Owner Capital Introduced','Owner Capital','bank')">+ ₹30,000 Capital</button>
+    <button onclick="quick('asset',15000,'Equipment Purchase','Equipment','bank')">+ ₹15,000 Equipment</button>
+    <button onclick="quick('expense',10000,'Staff Salary','Salary','bank')">+ ₹10,000 Salary</button>
+   </div>
+  </div>
+ </div>
+</div>
+<div id="toast" class="toast"></div>
+
+<script>
+const KEY='bookease_transactions_v1';
+let txs=load();
+const $=id=>document.getElementById(id);
+const money=n=>(Number(n)||0).toLocaleString('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0});
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+function load(){try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){return[]}}
+function persist(){localStorage.setItem(KEY,JSON.stringify(txs))}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function toast(s){const t=$('toast');t.textContent=s;t.style.display='block';setTimeout(()=>t.style.display='none',2200)}
+function go(id,btn){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));$(id).classList.add('active');document.querySelectorAll('.navlinks button').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');renderAll();window.scrollTo({top:0,behavior:'smooth'})}
+function openTx(){ $('modal').classList.add('open'); $('date').value=new Date().toISOString().slice(0,10); syncCategory(); setTimeout(()=>$('desc').focus(),100)}
+function closeTx(){$('modal').classList.remove('open')}
+function syncCategory(){
+ const map={sale:['Sales Revenue'],expense:['Rent','Salary','Marketing','Utilities','Software','Travel','Other Expense'],asset:['Equipment','Furniture','Vehicle','Computer'],capital:['Owner Capital'],loan:['Loan Payable'],receipt:['Accounts Receivable'],payment:['Accounts Payable'],drawings:['Drawings']};
+ $('category').innerHTML=(map[$('type').value]||['General']).map(x=>`<option>${x}</option>`).join('');
+ const creditTypes=['sale','expense','asset'];
+ $('method').querySelector('option[value=credit]').disabled=!creditTypes.includes($('type').value);
+ if(!creditTypes.includes($('type').value)&&$('method').value==='credit')$('method').value='bank';
+}
+function saveTx(e){
+ e.preventDefault();
+ const t={id:uid(),date:$('date').value,type:$('type').value,desc:$('desc').value.trim(),amount:+$('amount').value,method:$('method').value,category:$('category').value};
+ if(!t.amount||t.amount<=0)return;
+ txs.push(t);persist();closeTx();e.target.reset();renderAll();toast('Transaction saved successfully.');
+}
+function quick(type,amount,desc,category,method='bank'){
+ txs.push({id:uid(),date:new Date().toISOString().slice(0,10),type,amount,desc,category,method});
+ persist();renderAll();toast('Quick transaction added.');
+}
+function deleteTx(id){txs=txs.filter(t=>t.id!==id);persist();renderAll();toast('Transaction deleted. Reports updated.')}
+function clearData(){if(confirm('Clear all BookEase transactions?')){txs=[];persist();renderAll();toast('All transaction data cleared.')}}
+function loadDemo(){
+ if(txs.length&&!confirm('Add sample business data to the existing records?'))return;
+ const d=[
+ ['capital',300000,'Owner capital introduced','Owner Capital','bank'],
+ ['sale',120000,'Retail sales','Sales Revenue','bank'],
+ ['expense',20000,'Office rent','Rent','bank'],
+ ['expense',35000,'Employee salary','Salary','bank'],
+ ['asset',50000,'Computer equipment','Equipment','bank'],
+ ['sale',80000,'Client service sales','Sales Revenue','credit'],
+ ['expense',12000,'Marketing campaign','Marketing','bank'],
+ ['receipt',50000,'Customer receipt','Accounts Receivable','bank'],
+ ['loan',100000,'Business loan received','Loan Payable','bank'],
+ ['expense',8000,'Software subscription','Software','bank'],
+ ['payment',10000,'Supplier payment','Accounts Payable','bank']
+ ];
+ d.forEach(x=>txs.push({id:uid(),date:new Date().toISOString().slice(0,10),type:x[0],amount:x[1],desc:x[2],category:x[3],method:x[4]}));
+ persist();renderAll();toast('Sample business data loaded.');
+}
+function quickAddForm(){
+ return `<div class="formgrid">
+ <div class="field"><label>Transaction Type</label><select onchange="quickTypeFromDash(this.value)" id="dashType"><option value="sale">Sales</option><option value="expense">Expense</option><option value="asset">Asset Purchase</option><option value="capital">Owner Capital</option><option value="loan">Loan Received</option></select></div>
+ <div class="field"><label>Amount (₹)</label><input id="dashAmount" type="number" placeholder="25000"></div>
+ <div class="field span2"><label>Description</label><input id="dashDesc" placeholder="e.g. Office rent paid"></div>
+ <div class="field"><label>Payment Method</label><select id="dashMethod"><option value="bank">Bank</option><option value="cash">Cash</option><option value="credit">Credit</option></select></div>
+ <div class="field"><label>Category</label><input id="dashCat" placeholder="Rent"></div>
+ </div>
+ <div class="actions" style="margin-top:12px"><button class="btn primary" onclick="saveDashTx()">Save Transaction</button><button class="btn secondary" onclick="openTx()">More Options</button></div>
+ <div class="notice" style="margin-top:10px">Need a 1-click demo? Use <b>Load Sample Data</b> below the dashboard chart or the quick buttons in Add Transaction.</div>`;
+}
+function saveDashTx(){
+ const amount=+$('dashAmount').value;if(!amount)return toast('Enter an amount.');
+ const type=$('dashType').value;
+ txs.push({id:uid(),date:new Date().toISOString().slice(0,10),type,amount,desc:$('dashDesc').value||label(type),category:$('dashCat').value||defaultCat(type),method:$('dashMethod').value});
+ persist();renderAll();toast('Transaction saved successfully.');
+ $('dashAmount').value='';$('dashDesc').value='';$('dashCat').value='';
+}
+function defaultCat(t){return ({sale:'Sales Revenue',expense:'Other Expense',asset:'Equipment',capital:'Owner Capital',loan:'Loan Payable'})[t]||'General'}
+function quickTypeFromDash(t){$('dashCat').value=defaultCat(t)}
+function label(t){return ({sale:'Sales',expense:'Expense',asset:'Asset Purchase',capital:'Owner Capital',loan:'Loan Received',receipt:'Customer Receipt',payment:'Supplier Payment',drawings:'Owner Withdrawal'})[t]||t}
+function totals(){
+ const a={sales:0,expenses:0,assets:0,capital:0,loans:0,ar:0,ap:0,cash:0,drawings:0};
+ txs.forEach(t=>{
+  const x=t.amount;
+  if(t.type==='sale'){a.sales+=x;if(t.method==='credit')a.ar+=x;else a.cash+=x}
+  else if(t.type==='expense'){a.expenses+=x;if(t.method==='credit')a.ap+=x;else a.cash-=x}
+  else if(t.type==='asset'){a.assets+=x;if(t.method==='credit')a.ap+=x;else a.cash-=x}
+  else if(t.type==='capital'){a.capital+=x;a.cash+=x}
+  else if(t.type==='loan'){a.loans+=x;a.cash+=x}
+  else if(t.type==='receipt'){a.ar=Math.max(0,a.ar-x);a.cash+=x}
+  else if(t.type==='payment'){a.ap=Math.max(0,a.ap-x);a.cash-=x}
+  else if(t.type==='drawings'){a.drawings+=x;a.cash-=x}
+ });
+ a.profit=a.sales-a.expenses;
+ return a;
+}
+function journal(){
+ const out=[];
+ txs.forEach(t=>{
+  let d,c;
+  if(t.type==='sale'){d=t.method==='credit'?'Accounts Receivable':cap(t.method);c='Sales Revenue'}
+  if(t.type==='expense'){d=(t.category||'Expense')+' Expense';c=t.method==='credit'?'Accounts Payable':cap(t.method)}
+  if(t.type==='asset'){d=t.category||'Equipment';c=t.method==='credit'?'Accounts Payable':cap(t.method)}
+  if(t.type==='capital'){d=cap(t.method);c='Owner Capital'}
+  if(t.type==='loan'){d=cap(t.method);c='Loan Payable'}
+  if(t.type==='receipt'){d=cap(t.method);c='Accounts Receivable'}
+  if(t.type==='payment'){d='Accounts Payable';c=cap(t.method)}
+  if(t.type==='drawings'){d='Drawings';c=cap(t.method)}
+  if(d&&c)out.push({date:t.date,desc:t.desc,debit:d,credit:c,amount:t.amount});
+ });
+ return out;
+}
+function cap(x){return x==='bank'?'Bank':x==='cash'?'Cash':'Credit / Outstanding'}
+function accountBalances(){
+ const b={};
+ journal().forEach(j=>{b[j.debit]=(b[j.debit]||0)+j.amount;b[j.credit]=(b[j.credit]||0)-j.amount});
+ return b;
+}
+function renderAll(){renderTxForm();renderDashboard();renderTransactions();renderJournal();populateAccounts();renderLedger();renderTrial();renderReports();renderRatios()}
+function renderTxForm(){$('txForm').innerHTML=quickAddForm()}
+function renderDashboard(){
+ const a=totals();$('heroProfit').textContent=money(a.profit);
+ const cards=[['Total Sales',a.sales,'Recorded revenue'],['Total Expenses',a.expenses,'Recorded costs'],['Net Profit',a.profit,a.profit>=0?'Positive recorded result':'Loss recorded'],['Cash / Bank',a.cash,'Recorded cash position']];
+ $('kpis').innerHTML=cards.map(x=>`<div class="card kpi"><small>${x[0]}</small><strong>${money(x[1])}</strong><span>${x[2]}</span></div>`).join('');
+ const recent=[...txs].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
+ $('recent').innerHTML=recent.length?`<div class="tablewrap"><table><thead><tr><th>Date</th><th>Transaction</th><th>Type</th><th class="num">Amount</th></tr></thead><tbody>${recent.map(t=>`<tr><td>${t.date}</td><td>${esc(t.desc)}</td><td><span class="pill ${t.type}">${label(t.type)}</span></td><td class="num">${money(t.amount)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No transactions yet.<br><br><button class="btn primary" onclick="openTx()">+ Add Transaction</button> <button class="btn secondary" onclick="loadDemo()">Load Demo Data</button></div>';
+ $('health').innerHTML=healthHTML(a);
+ drawBars();
+}
+function healthHTML(a){
+ if(!txs.length)return '<div class="notice">No transactions have been recorded yet. Add your first transaction to generate accounting reports.</div>';
+ const current=(a.cash+a.ar)/(a.ap||1),m=a.sales?a.profit/a.sales*100:0;
+ let s=`<div class="${a.profit>=0?'success':'warn'}"><b>${a.profit>=0?'Positive result':'Loss recorded'}:</b> ${money(a.profit)} net result.</div>`;
+ s+=`<div class="notice" style="margin-top:8px"><b>Net margin:</b> ${m.toFixed(1)}% based on recorded sales.</div>`;
+ if(a.ar>0)s+=`<div class="notice" style="margin-top:8px"><b>Receivables:</b> ${money(a.ar)} remains outstanding.</div>`;
+ s+=`<div class="notice" style="margin-top:8px"><b>Current ratio:</b> ${current.toFixed(2)}× based on recorded current assets and payables.</div>`;
+ return s;
+}
+function drawBars(){
+ const years=[...new Set(txs.map(t=>t.date.slice(0,4)))].sort();
+ const data=years.map(y=>({y,s:txs.filter(t=>t.date.startsWith(y)&&t.type==='sale').reduce((a,t)=>a+t.amount,0),e:txs.filter(t=>t.date.startsWith(y)&&t.type==='expense').reduce((a,t)=>a+t.amount,0)}));
+ if(!data.length){$('chartArea').innerHTML='<div class="empty" style="margin-top:30px">Add transactions to see the revenue vs expenses chart.</div>';return}
+ const max=Math.max(...data.flatMap(x=>[x.s,x.e]),1);
+ $('chartArea').innerHTML=`<div class="barChart">${data.map(x=>`<div class="barGroup"><div class="bar sales" style="height:${Math.max(3,x.s/max*100)}%"><span>${money(x.s)}</span></div><div class="bar exp" style="height:${Math.max(3,x.e/max*100)}%"><span>${money(x.e)}</span></div></div>`).join('')}</div><div class="axis">${data.map(x=>`<div>${x.y}<br><span style="color:var(--primary)">■ Sales</span> <span style="color:var(--olive)">■ Expense</span></div>`).join('')}</div>`;
+}
+function renderTransactions(){
+ const q=($('search')?.value||'').toLowerCase(),f=$('filter')?.value||'all';
+ const list=txs.filter(t=>(f==='all'||t.type===f)&&(`${t.desc} ${t.category} ${label(t.type)}`.toLowerCase().includes(q))).sort((a,b)=>b.date.localeCompare(a.date));
+ if(!list.length){$('transactionTable').innerHTML='<div class="empty">No matching transactions.</div>';return}
+ const js=journal();$('transactionTable').innerHTML=`<div class="tablewrap"><table><thead><tr><th>Date</th><th>Transaction</th><th>Type</th><th>Amount</th><th>Payment</th><th>Debit</th><th>Credit</th><th>Action</th></tr></thead><tbody>${list.map(t=>{const j=js.find(x=>x.date===t.date&&x.desc===t.desc&&x.amount===t.amount);return `<tr><td>${t.date}</td><td>${esc(t.desc)}</td><td><span class="pill ${t.type}">${label(t.type)}</span></td><td>${money(t.amount)}</td><td>${cap(t.method)}</td><td>${j?.debit||''}</td><td>${j?.credit||''}</td><td><button class="btn danger" style="padding:6px 8px" onclick="deleteTx('${t.id}')">Delete</button></td></tr>`}).join('')}</tbody></table></div>`;
+}
+function renderJournal(){
+ const j=journal();
+ $('journalTable').innerHTML=j.length?`<div class="tablewrap"><table><thead><tr><th>Date</th><th>Narration</th><th>Debit Account</th><th class="num">Debit</th><th>Credit Account</th><th class="num">Credit</th></tr></thead><tbody>${j.map(x=>`<tr><td>${x.date}</td><td>${esc(x.desc)}</td><td>${x.debit}</td><td class="num">${money(x.amount)}</td><td>${x.credit}</td><td class="num">${money(x.amount)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No journal entries yet. Add a transaction first.</div>';
+}
+function populateAccounts(){
+ const b=accountBalances(), accounts=[...new Set(['Cash','Bank','Sales Revenue','Rent Expense','Salary Expense','Marketing Expense','Software Expense','Equipment','Accounts Receivable','Accounts Payable','Owner Capital','Loan Payable','Drawings',...Object.keys(b)])];
+ const old=$('accountSelect').value;
+ $('accountSelect').innerHTML=accounts.map(a=>`<option>${a}</option>`).join('');
+ if(accounts.includes(old))$('accountSelect').value=old;
+}
+function renderLedger(){
+ const acc=$('accountSelect').value,j=journal().filter(x=>x.debit===acc||x.credit===acc).sort((a,b)=>a.date.localeCompare(b.date));
+ let balance=0;
+ $('ledgerTable').innerHTML=j.length?`<div class="tablewrap"><table><thead><tr><th>Date</th><th>Particulars</th><th class="num">Debit</th><th class="num">Credit</th><th class="num">Balance</th></tr></thead><tbody>${j.map(x=>{const d=x.debit===acc?x.amount:0,c=x.credit===acc?x.amount:0;balance+=d-c;return `<tr><td>${x.date}</td><td>${esc(x.desc)}</td><td class="num">${money(d)}</td><td class="num">${money(c)}</td><td class="num"><b>${money(balance)}</b></td></tr>`}).join('')}</tbody></table></div>`:'<div class="empty">No entries for this account.</div>';
+}
+function renderTrial(){
+ const b=accountBalances(),accounts=Object.keys(b).filter(k=>Math.abs(b[k])>.004).sort(),rows=accounts.map(k=>[k,b[k]>0?b[k]:0,b[k]<0?-b[k]:0]);
+ const debit=rows.reduce((s,r)=>s+r[1],0),credit=rows.reduce((s,r)=>s+r[2],0),ok=Math.abs(debit-credit)<.01;
+ $('trialBadge').textContent=ok?'BALANCED':'CHECK ENTRIES';$('trialBadge').className='pill '+(ok?'capital':'expense');
+ $('trialTable').innerHTML=rows.length?`<div class="tablewrap"><table><thead><tr><th>Account</th><th class="num">Debit</th><th class="num">Credit</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r[0]}</td><td class="num">${r[1]?money(r[1]):'—'}</td><td class="num">${r[2]?money(r[2]):'—'}</td></tr>`).join('')}<tr><th>TOTAL</th><th class="num">${money(debit)}</th><th class="num">${money(credit)}</th></tr></tbody></table></div><div class="${ok?'success':'warn'}" style="margin-top:12px">${ok?'✓ Total debit equals total credit. Trial balance is balanced.':'⚠ Debit and credit totals do not agree. Review the accounting entries.'}</div>`:'<div class="empty">No transactions to generate a trial balance.</div>';
+}
+function statement(rows){return `<table style="min-width:0">${rows.map(r=>r[0]==='section'?`<tr><th colspan="2" style="background:transparent;color:var(--primary);padding-top:13px">${r[1]}</th></tr>`:`<tr class="${r[0]}"><td>${r[1]}</td><td class="num">${money(r[2])}</td></tr>`).join('')}</table>`}
+function renderReports(){
+ const a=totals();
+ const totalAssets=a.cash+a.ar+a.assets,totalLE=a.ap+a.loans+a.capital+a.profit-a.drawings;
+ $('pl').innerHTML=statement([['section','Income'],['','Sales Revenue',a.sales],['subtotal','Total Revenue',a.sales],['section','Expenses'],['','Operating Expenses',a.expenses],['grand','Net Profit / (Loss)',a.profit]]);
+ $('bs').innerHTML=statement([['section','Assets'],['','Cash / Bank',a.cash],['','Accounts Receivable',a.ar],['','Equipment / Fixed Assets',a.assets],['subtotal','Total Assets',totalAssets],['section','Liabilities'],['','Accounts Payable',a.ap],['','Loan Payable',a.loans],['section','Equity'],['','Owner Capital',a.capital],['','Retained Profit',a.profit],['','Less: Drawings',-a.drawings],['grand','Liabilities + Equity',totalLE]]);
+ const operating=a.sales-a.expenses-a.ar+a.ap, investing=-a.assets, financing=a.capital+a.loans-a.drawings;
+ $('cf').innerHTML=statement([['section','Operating Activities'],['','Operating cash flow',operating],['section','Investing Activities'],['','Asset purchases',investing],['section','Financing Activities'],['','Capital + Loans - Drawings',financing],['grand','Net Cash Flow',operating+investing+financing]]);
+}
+function renderRatios(){
+ const a=totals(),current=(a.cash+a.ar)/(a.ap||1),de=(a.loans+a.ap)/Math.max(a.capital+a.profit-a.drawings,1),margin=a.sales?a.profit/a.sales*100:0,expense=a.sales?a.expenses/a.sales*100:0;
+ const defs=[['Current Ratio',current.toFixed(2)+'×','Liquidity'],['Debt-to-Equity',de.toFixed(2)+'×','Leverage'],['Net Profit Margin',margin.toFixed(1)+'%','Profitability'],['Expense Ratio',expense.toFixed(1)+'%','Cost intensity']];
+ $('ratioCards').innerHTML=defs.map(x=>`<div class="card kpi"><small>${x[2]}</small><strong>${x[1]}</strong><span>${x[0]}</span></div>`).join('');
+ let insights=[];
+ if(!txs.length)insights.push('No transactions have been recorded yet.');
+ else{
+  insights.push(a.profit>=0?'Revenue is currently higher than recorded operating expenses.':'Recorded expenses currently exceed sales.');
+  if(a.ar>0)insights.push(`Customer receivables of ${money(a.ar)} are outstanding.`);
+  if(a.ap>0)insights.push(`Payables of ${money(a.ap)} should be monitored.`);
+  if(expense>70)insights.push('Expense ratio is relatively high compared with recorded sales.');
+  if(current<1)insights.push('Current assets are below recorded current liabilities; short-term liquidity should be monitored.');
+ }
+ $('insights').innerHTML=insights.map(x=>`<div class="notice" style="margin-bottom:7px">• ${x}</div>`).join('');
+}
+function exportCSV(){
+ const rows=[['Date','Transaction','Type','Amount','Payment Method','Category']];
+ txs.forEach(t=>rows.push([t.date,t.desc,label(t.type),t.amount,cap(t.method),t.category]));
+ const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\\n');
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='bookease-transactions.csv';a.click();toast('CSV exported.');
+}
+$('date').value=new Date().toISOString().slice(0,10);syncCategory();renderAll();
+</script>
+</body>
+</html>
